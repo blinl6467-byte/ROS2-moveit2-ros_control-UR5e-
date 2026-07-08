@@ -1,0 +1,24 @@
+targets:
+  easy_front:
+    difficulty: easy
+    joints: [1.35, -1.45, 1.45, -1.55, -1.57, 0.00]
+
+  easy_left:
+    difficulty: easy
+    joints: [1.10, -1.42, 1.70, -1.88, -1.57, 0.28]
+
+  medium_table_reach:
+    difficulty: medium
+    joints: [1.54, -1.62, 1.40, -1.20, -1.60, -0.11]
+
+  medium_cross_body:
+    difficulty: medium
+    joints: [1.95, -1.72, 1.32, -1.05, -1.57, -0.48]
+
+  hard_high_reach:
+    difficulty: hard
+    joints: [0.82, -1.18, 1.92, -2.22, -1.52, 0.62]
+
+  hard_narrow_exit:
+    difficulty: hard
+    joints: [2.10, -1.95, 1.18, -0.86, -1.58, -0.70]

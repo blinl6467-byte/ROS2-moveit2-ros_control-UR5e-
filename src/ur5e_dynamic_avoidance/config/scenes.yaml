@@ -1,0 +1,36 @@
+scenes:
+  baseline:
+    type: baseline
+    description: No added obstacle. Used only as a reference.
+
+  table_cube_goal:
+    type: table_object
+    description: Tabletop, one cube obstacle, and a target object on the table.
+    objects:
+      - {id: table, shape: box, position: [0.45, 0.00, 0.03], size: [0.90, 0.80, 0.06]}
+      - {id: cube_obstacle, shape: box, position: [0.38, 0.02, 0.32], size: [0.14, 0.14, 0.30]}
+      - {id: target_object, shape: box, position: [0.54, -0.22, 0.12], size: [0.08, 0.08, 0.12]}
+
+  narrow_passage:
+    type: narrow_passage
+    description: Two cube walls create a narrow passage in front of the arm.
+    objects:
+      - {id: passage_left_wall, shape: box, position: [0.40, 0.28, 0.35], size: [0.14, 0.16, 0.48]}
+      - {id: passage_right_wall, shape: box, position: [0.40, -0.28, 0.35], size: [0.14, 0.16, 0.48]}
+      - {id: passage_backstop, shape: box, position: [0.64, 0.00, 0.36], size: [0.08, 0.82, 0.55]}
+
+  mid_arm_obstacle:
+    type: mid_arm_proximity
+    description: A cube is placed close to the likely upper-arm/forearm swept volume.
+    objects:
+      - {id: mid_arm_cube, shape: box, position: [0.18, 0.18, 0.42], size: [0.18, 0.18, 0.28]}
+      - {id: low_table_reference, shape: box, position: [0.45, 0.00, 0.03], size: [0.90, 0.80, 0.06]}
+
+  combined_hard:
+    type: combined
+    description: Tabletop plus narrow-passage walls and a mid-arm obstacle.
+    objects:
+      - {id: combined_table, shape: box, position: [0.45, 0.00, 0.03], size: [0.90, 0.80, 0.06]}
+      - {id: combined_left_wall, shape: box, position: [0.40, 0.30, 0.35], size: [0.14, 0.15, 0.48]}
+      - {id: combined_right_wall, shape: box, position: [0.40, -0.30, 0.35], size: [0.14, 0.15, 0.48]}
+      - {id: combined_mid_cube, shape: box, position: [0.18, 0.18, 0.42], size: [0.16, 0.16, 0.26]}

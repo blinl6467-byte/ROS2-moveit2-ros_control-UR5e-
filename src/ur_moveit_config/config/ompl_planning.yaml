@@ -1,0 +1,70 @@
+planner_configs:
+  SBLkConfigDefault:
+    type: geometric::SBL
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+  ESTkConfigDefault:
+    type: geometric::EST
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    goal_bias: 0.05  # 接近目标时，以该概率选择目标。默认值：0.05
+  LBKPIECEkConfigDefault:
+    type: geometric::LBKPIECE
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    border_fraction: 0.9  # 聚焦边界的时间比例。默认值：0.9
+    min_valid_path_fraction: 0.5  # 接受有效比例超过该阈值的部分有效运动。默认值：0.5
+  BKPIECEkConfigDefault:
+    type: geometric::BKPIECE
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    border_fraction: 0.9  # 聚焦边界的时间比例。默认值：0.9
+    failed_expansion_score_factor: 0.5  # 扩展运动失败时，按该系数缩放评分。默认值：0.5
+    min_valid_path_fraction: 0.5  # 接受有效比例超过该阈值的部分有效运动。默认值：0.5
+  KPIECEkConfigDefault:
+    type: geometric::KPIECE
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    goal_bias: 0.05  # 接近目标时，以该概率选择目标。默认值：0.05
+    border_fraction: 0.9  # 聚焦边界的时间比例。默认值：0.9 (0.0,1.]
+    failed_expansion_score_factor: 0.5  # 扩展运动失败时，按该系数缩放评分。默认值：0.5
+    min_valid_path_fraction: 0.5  # 接受有效比例超过该阈值的部分有效运动。默认值：0.5
+  RRTkConfigDefault:
+    type: geometric::RRT
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    goal_bias: 0.05  # 接近目标时，以该概率选择目标。默认值：0.05
+  RRTConnectkConfigDefault:
+    type: geometric::RRTConnect
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+  RRTstarkConfigDefault:
+    type: geometric::RRTstar
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    goal_bias: 0.05  # 接近目标时，以该概率选择目标。默认值：0.05
+    delay_collision_checking: 1  # 找到无碰撞父节点后立即停止碰撞检查。默认值：1
+  TRRTkConfigDefault:
+    type: geometric::TRRT
+    range: 0.0  # 加入树的最大运动距离。==> maxDistance_ 默认值：0.0；若为 0.0，则在 setup() 中设置
+    goal_bias: 0.05  # 接近目标时，以该概率选择目标。默认值：0.05
+    max_states_failed: 10  # 开始提高温度的失败状态数。默认值：10
+    temp_change_factor: 2.0  # 温度增减倍率。默认值：2.0
+    min_temperature: 10e-10  # 温度变化下限。默认值：10e-10
+    init_temperature: 10e-6  # 初始温度。默认值：10e-6
+    frountier_threshold: 0.0  # 新状态到最近邻的距离阈值，低于该值则不视为前沿。默认值：0.0，在 setup() 中设置
+    frountierNodeRatio: 0.1  # 比例 1/10，即每 10 个前沿对应 1 个非前沿。默认值：0.1
+    k_constant: 0.0  # 用于归一化表达式的值。默认值：0.0，在 setup() 中设置
+  PRMkConfigDefault:
+    type: geometric::PRM
+    max_nearest_neighbors: 10  # 使用 k 个最近邻。默认值：10
+  PRMstarkConfigDefault:
+    type: geometric::PRMstar
+ur_manipulator:
+  planner_configs:
+    - SBLkConfigDefault
+    - ESTkConfigDefault
+    - LBKPIECEkConfigDefault
+    - BKPIECEkConfigDefault
+    - KPIECEkConfigDefault
+    - RRTkConfigDefault
+    - RRTConnectkConfigDefault
+    - RRTstarkConfigDefault
+    - TRRTkConfigDefault
+    - PRMkConfigDefault
+    - PRMstarkConfigDefault
+  ## 注意：注释掉下一行会让 MoveIt 选择 RRTConnect 作为默认规划器，而不是 LBKPIECE
+  # projection_evaluator: joints(shoulder_pan_joint,shoulder_lift_joint)
+  longest_valid_segment_fraction: 0.01

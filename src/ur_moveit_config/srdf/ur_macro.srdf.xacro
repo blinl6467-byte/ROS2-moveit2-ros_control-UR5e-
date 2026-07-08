@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+<!--
+    该文件既不替代 URDF，也不是 URDF 的扩展。
+    它用于描述机器人结构的语义信息。
+    该机器人仍必须有对应 URDF 文件，用于定义这里引用的关节和连杆。
+-->
+  <xacro:macro name="ur_srdf" params="name prefix">
+    <!-- 组：表示一组关节和连杆，可用于指定规划自由度、定义机械臂、末端执行器等 -->
+    <!-- 连杆：指定连杆时，会自动包含该连杆的父关节（如果存在） -->
+    <!-- 关节：指定关节时，会自动包含该关节的子连杆 -->
+    <!-- 运动链：指定链时，会包含链上的所有连杆（含端点），并包含这些连杆的父关节，因此链上关节和基座连杆的父关节都会进入该组 -->
+    <!-- 子组：组也可以通过引用已定义组名来构成 -->
+    <group name="${prefix}${name}_manipulator">
+      <chain base_link="${prefix}base_link" tip_link="${prefix}tool0" />
+    </group>
+    <!-- 组状态：用关节值为特定组定义命名状态，例如“收拢手臂” -->
+    <group_state name="${prefix}home" group="${prefix}${name}_manipulator">
+      <joint name="${prefix}elbow_joint" value="0" />
+      <joint name="${prefix}shoulder_lift_joint" value="-1.5707" />
+      <joint name="${prefix}shoulder_pan_joint" value="0" />
+      <joint name="${prefix}wrist_1_joint" value="0" />
+      <joint name="${prefix}wrist_2_joint" value="0" />
+      <joint name="${prefix}wrist_3_joint" value="0" />
+    </group_state>
+    <group_state name="${prefix}up" group="${prefix}${name}_manipulator">
+      <joint name="${prefix}elbow_joint" value="0" />
+      <joint name="${prefix}shoulder_lift_joint" value="-1.5707" />
+      <joint name="${prefix}shoulder_pan_joint" value="0" />
+      <joint name="${prefix}wrist_1_joint" value="-1.5707" />
+      <joint name="${prefix}wrist_2_joint" value="0" />
+      <joint name="${prefix}wrist_3_joint" value="0" />
+    </group_state>
+    <group_state name="${prefix}test_configuration" group="${prefix}${name}_manipulator">
+      <joint name="${prefix}elbow_joint" value="1.4" />
+      <joint name="${prefix}shoulder_lift_joint" value="-1.62" />
+      <joint name="${prefix}shoulder_pan_joint" value="1.54" />
+      <joint name="${prefix}wrist_1_joint" value="-1.2" />
+      <joint name="${prefix}wrist_2_joint" value="-1.6" />
+      <joint name="${prefix}wrist_3_joint" value="-0.11" />
+    </group_state>
+    <!-- 末端执行器：描述末端执行器信息 -->
+    <!-- 虚拟关节：定义机器人连杆与外部参考坐标系之间的虚拟关节（相对机器人视为固定） -->
+    <!-- 禁用碰撞：默认认为任意两个机器人连杆都可能碰撞；该标签用于关闭指定连杆对之间的碰撞检查。 -->
+    <disable_collisions link1="${prefix}base_link" link2="${prefix}base_link_inertia" reason="Adjacent" />
+    <disable_collisions link1="${prefix}base_link_inertia" link2="${prefix}shoulder_link" reason="Adjacent" />
+    <disable_collisions link1="${prefix}tool0" link2="${prefix}wrist_1_link" reason="Never" />
+    <disable_collisions link1="${prefix}tool0" link2="${prefix}wrist_2_link" reason="Never" />
+    <disable_collisions link1="${prefix}tool0" link2="${prefix}wrist_3_link" reason="Adjacent" />
+    <disable_collisions link1="${prefix}forearm_link" link2="${prefix}upper_arm_link" reason="Adjacent" />
+    <disable_collisions link1="${prefix}forearm_link" link2="${prefix}wrist_1_link" reason="Adjacent" />
+    <disable_collisions link1="${prefix}shoulder_link" link2="${prefix}upper_arm_link" reason="Adjacent" />
+    <disable_collisions link1="${prefix}wrist_1_link" link2="${prefix}wrist_2_link" reason="Adjacent" />
+    <disable_collisions link1="${prefix}wrist_1_link" link2="${prefix}wrist_3_link" reason="Never" />
+    <disable_collisions link1="${prefix}wrist_2_link" link2="${prefix}wrist_3_link" reason="Adjacent" />
+
+  </xacro:macro>
+</robot>

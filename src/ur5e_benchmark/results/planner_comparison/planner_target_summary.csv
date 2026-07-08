@@ -1,0 +1,13 @@
+planner,target,trials,success_rate,avg_planning_wall_time,avg_planned_duration,avg_trajectory_points,avg_joint_path_length
+PRMkConfigDefault,home_front,5,1.0,0.03650268,2.665472,28.0,2.65384
+PRMkConfigDefault,reach_left,5,1.0,0.016650619999999998,2.856464,30.0,2.65561
+PRMkConfigDefault,reach_right,5,1.0,0.01767432,3.174678,33.0,2.944468
+RRTConnectkConfigDefault,home_front,5,1.0,0.01766138,2.665496,28.0,2.65382
+RRTConnectkConfigDefault,reach_left,5,1.0,0.01707792,2.856524,30.0,2.655666
+RRTConnectkConfigDefault,reach_right,5,1.0,0.016401080000000002,3.174558,33.0,2.9443799999999998
+RRTkConfigDefault,home_front,5,1.0,0.01431352,2.665526,28.0,2.653852
+RRTkConfigDefault,reach_left,5,1.0,0.01576784,2.8565,30.0,2.655646
+RRTkConfigDefault,reach_right,5,1.0,0.0153422,3.174656,33.0,2.94443
+RRTstarkConfigDefault,home_front,5,1.0,3.012354,2.665448,28.0,2.653728
+RRTstarkConfigDefault,reach_left,5,1.0,3.0047260000000002,2.856446,30.0,2.655582
+RRTstarkConfigDefault,reach_right,5,1.0,3.005034,3.174654,33.0,2.944382

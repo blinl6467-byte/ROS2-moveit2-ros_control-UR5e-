@@ -1,0 +1,80 @@
+# 关节限制
+#
+# 数据来源：
+#
+#  - Universal Robots e-Series 用户手册，UR5e，版本 5.8
+#    https://s3-eu-west-1.amazonaws.com/ur-support-site/69091/99404_UR5e_User_Manual_en_Global.pdf
+#  - 支持 > 文章 > UR 文章 > 最大关节扭矩
+#    https://www.universal-robots.com/articles/ur-articles/max-joint-torques
+#    获取日期：2020-06-16，最后修改：2020-06-09
+joint_limits:
+  shoulder_pan_joint:
+    # 加速度限制未公开提供
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_position_limits: true
+    has_velocity_limits: true
+    max_effort: 150.0
+    max_position: !degrees  360.0
+    max_velocity: !degrees  180.0
+    min_position: !degrees -360.0
+  shoulder_lift_joint:
+    # 加速度限制未公开提供
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_position_limits: true
+    has_velocity_limits: true
+    max_effort: 150.0
+    max_position: !degrees  360.0
+    max_velocity: !degrees  180.0
+    min_position: !degrees -360.0
+  elbow_joint:
+    # 加速度限制未公开提供
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_position_limits: true
+    has_velocity_limits: true
+    max_effort: 150.0
+    # 这里人为地将该关节限制为实际位置范围的一半
+    # 用于避免 MoveIt/OMPL 规划问题；由于机器人实体结构限制，
+    # 'elbow_joint' 无法旋转超过约 +- 1 pi，
+    # 否则会与肩部抬升关节发生干涉。
+    #
+    # 否则搜索空间会被分成两段，
+    # 两段之间没有可连通路径，从而导致规划问题。
+    #
+    # 更多信息请参考 https://github.com/ros-industrial/universal_robot/issues/265
+    # 。
+    max_position: !degrees  180.0
+    max_velocity: !degrees  180.0
+    min_position: !degrees -180.0
+  wrist_1_joint:
+    # 加速度限制未公开提供
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_position_limits: true
+    has_velocity_limits: true
+    max_effort: 28.0
+    max_position: !degrees  360.0
+    max_velocity: !degrees  180.0
+    min_position: !degrees -360.0
+  wrist_2_joint:
+    # 加速度限制未公开提供
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_position_limits: true
+    has_velocity_limits: true
+    max_effort: 28.0
+    max_position: !degrees  360.0
+    max_velocity: !degrees  180.0
+    min_position: !degrees -360.0
+  wrist_3_joint:
+    # 加速度限制未公开提供
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_position_limits: true
+    has_velocity_limits: true
+    max_effort: 28.0
+    max_position: !degrees  360.0
+    max_velocity: !degrees  180.0
+    min_position: !degrees -360.0

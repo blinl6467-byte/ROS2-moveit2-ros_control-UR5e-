@@ -1,0 +1,25 @@
+# 这些限制由 MoveIt 使用，并补充/覆盖 ur_description 中的定义。
+#
+# 机器人本体并没有固有的关节加速度限制（只有扭矩限制），
+# 但 MoveIt 做时间参数化时需要这些值。这里采用保守数值以适配大多数
+# 使用场景。特定应用中，提高这些值可能带来更好的执行性能。
+
+joint_limits:
+  shoulder_pan_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  shoulder_lift_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  elbow_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  wrist_1_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  wrist_2_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  wrist_3_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
