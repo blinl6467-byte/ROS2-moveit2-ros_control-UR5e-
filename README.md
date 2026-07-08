@@ -1,4 +1,4 @@
-# UR5e 六轴机械臂运动规划、轨迹跟踪与避障仿真项目
+# 基于ROS2+moveit2+ros_control的UR5e六轴机械臂运动规划、轨迹跟踪与避障仿真项目
 
 这是一个面向机器人运动控制实习准备的 ROS 2 Humble 项目，围绕 UR5e 六轴机械臂完成从模型、Gazebo 仿真、MoveIt 规划、轨迹跟踪记录，到 planner/controller benchmark 和结构化避障评估的一套闭环 demo。
 
@@ -108,33 +108,28 @@ ros2 launch ur5e_bringup demo_joint_goal.launch.py
 ros2 launch ur5e_bringup demo_cartesian_waypoints.launch.py
 ```
 
+运行笛卡尔路径点规划，并记录轨迹跟踪 CSV：
+
+```bash
+ros2 launch ur5e_bringup demo_cartesian_tracking.launch.py output_file:=/tmp/ur5e_trajectory_log.csv
+```
+
+生成轨迹跟踪误差图：
+
+```bash
+ros2 run ur5e_motion_demo plot_trajectory_log.py /tmp/ur5e_trajectory_log.csv --output /tmp/ur5e_tracking_error.png
+```
+
 运行桌面、立方体障碍物、目标物、窄通道和机械臂中段障碍物避障 demo：
 
 ```bash
-ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py
+ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py gazebo_gui:=false
 ```
 
 无 Gazebo GUI 运行规划仿真：
 
 ```bash
 ros2 launch ur5e_bringup planning_sim.launch.py gazebo_gui:=false
-```
-
-RViz 默认已经打开 `tool0` 末端的 Trail，可用于录制末端轨迹。录屏时建议优先展示这四个入口：
-
-```bash
-ros2 launch ur5e_bringup demo_joint_goal.launch.py
-ros2 launch ur5e_bringup demo_pose_goal.launch.py
-ros2 launch ur5e_bringup demo_cartesian_waypoints.launch.py
-ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py
-```
-
-笛卡尔跟踪 CSV 和误差图作为离线分析结果保留在 `src/ur5e_motion_demo/results/cartesian_tracking/`。需要重新生成图表时：
-
-```bash
-ros2 run ur5e_motion_demo plot_trajectory_log.py \
-  src/ur5e_motion_demo/results/cartesian_tracking/trajectory_log.csv \
-  --output src/ur5e_motion_demo/results/cartesian_tracking/tracking_error_focused.png
 ```
 
 ## Benchmark 运行
@@ -226,11 +221,11 @@ ros2 run ur5e_dynamic_avoidance plot_obstacle_benchmark.py \
 | 内容 | 文件 |
 | --- | --- |
 | 轨迹日志 | `src/ur5e_motion_demo/results/cartesian_tracking/trajectory_log.csv` |
-| 轨迹误差图 | `src/ur5e_motion_demo/results/cartesian_tracking/tracking_error_focused.png` |
+| 轨迹误差图 | `src/ur5e_motion_demo/results/cartesian_tracking/tracking_error.png` |
 | 各关节 RMS 误差 | `src/ur5e_motion_demo/results/cartesian_tracking/tracking_rms_by_joint.png` |
 | 结果说明 | `src/ur5e_motion_demo/results/cartesian_tracking/README.md` |
 
-![轨迹跟踪误差](src/ur5e_motion_demo/results/cartesian_tracking/tracking_error_focused.png)
+![轨迹跟踪误差](src/ur5e_motion_demo/results/cartesian_tracking/tracking_error.png)
 
 ### Planner Benchmark
 
