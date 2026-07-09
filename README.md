@@ -4,18 +4,18 @@
 
 项目重点：
 
-- 如何搭建 URDF/Xacro、ros2_control、Gazebo 和 MoveIt 的完整仿真链路。
-- 如何让 UR5e 完成关节目标、末端位姿目标和笛卡尔路径规划。
-- 如何记录轨迹执行过程，并用 CSV 和图表分析跟踪误差。
-- 如何比较不同 OMPL planner 在多目标、多障碍场景下的成功率、规划时间和路径长度。
-- 如何增强现有 position trajectory controller 的评价指标，包括超调、稳态误差、90% 响应时间和调节时间。
-- 如何构建桌面、立方体障碍物、目标物、窄通道、机械臂中段近距离障碍物等避障场景。
+- 搭建 URDF/Xacro、ros2_control、Gazebo 和 MoveIt 的完整仿真链路。
+- 让 UR5e 完成关节目标、末端位姿目标和笛卡尔路径规划。
+- 记录轨迹执行过程，并用 CSV 和图表分析跟踪误差。
+- 比较不同 OMPL planner 在多目标、多障碍场景下的成功率、规划时间和路径长度。
+- 增强现有 position trajectory controller 的评价指标，包括超调、稳态误差、90% 响应时间和调节时间。
+- 建桌面、立方体障碍物、目标物、近距离障碍物等避障场景。
 
 ## 我解决了什么问题
 
 这个项目解决的是“机械臂运动规划 demo 很容易停留在演示层，但很难证明规划和控制效果”的问题。
 
-我把 UR5e 的仿真、规划、控制和数据分析连成一条可复现实验链路：先用 Gazebo 和 MoveIt 验证机械臂基础运动，再通过轨迹记录器输出实际执行数据，最后用 benchmark 脚本把不同 planner、不同目标难度和不同控制速度策略量化成 CSV、汇总表和图表。这样项目不仅能展示机械臂避障规划过程，也能回答“哪个规划器更稳”“速度变快后误差如何变化”“窄通道和中段障碍物对成功率有什么影响”等更接近工程实习的问题。
+我把 UR5e 的仿真、规划、控制和数据分析连成一条可复现实验链路：先用 Gazebo 和 MoveIt 验证机械臂基础运动，再通过轨迹记录器输出实际执行数据，最后用 benchmark 脚本把不同 planner、不同目标难度和不同控制速度策略量化成 CSV、汇总表和图表。不仅展示机械臂避障规划过程，也能回答“哪个规划器更稳”“速度变快后误差如何变化”“窄通道和中段障碍物对成功率有什么影响”等更接近工程的问题。
 
 ## 系统架构
 
@@ -302,23 +302,7 @@ ros2 run ur5e_dynamic_avoidance plot_obstacle_benchmark.py \
 | RViz 截图 | `docs/media/rviz_motion_plan.png` | 待录制 |
 | 30-60 秒视频 | 在此处填写 Bilibili / YouTube / 网盘链接 | 待上传 |
 
-录制建议脚本：
 
-```bash
-source /opt/ros/humble/setup.bash
-source install/setup.bash
-ros2 launch ur5e_bringup planning_sim.launch.py
-```
-
-另开终端运行：
-
-```bash
-source /opt/ros/humble/setup.bash
-source install/setup.bash
-ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py
-```
-
-视频建议控制在 30-60 秒，内容顺序可以是：Gazebo/RViz 环境总览、桌面和障碍物场景、一次避障规划、轨迹执行、最后切到 benchmark 图表。
 
 ## 当前完整度
 
@@ -331,17 +315,10 @@ ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py
 - 笛卡尔轨迹记录、CSV 输出和误差可视化。
 - OMPL planner benchmark。
 - position trajectory controller 指标增强和图表输出。
-- 桌面、立方体、目标物、窄通道、中段障碍物等结构化避障场景。
+- 桌面、立方体、目标物、障碍物等结构化避障场景。
 - 按场景、目标和难度分组的避障 benchmark。
 - CSV 汇总和 PNG 图表展示。
 
-仍可继续增强：
-
-- 录制 Gazebo/RViz 截图、GIF 和 30-60 秒讲解视频。
-- 增加最小障碍物距离、末端 clearance、碰撞边界余量等避障质量指标。
-- 增加目标物 attach/detach，扩展为 pick-and-place 任务。
-- 增加真实 UR 驱动迁移说明和硬件安全限制。
-- 对 velocity controller、effort controller、PID 参数和 update rate 做第二阶段控制对比。
 
 ## 测试验证
 
