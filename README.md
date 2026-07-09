@@ -1,76 +1,89 @@
-# 基于ROS2+moveit2+ros_control的UR5e六轴机械臂运动规划、轨迹跟踪与避障仿真项目
+# UR5e Motion Planning, Trajectory Tracking and Obstacle Avoidance Simulation
 
-这是一个面向机器人运动控制实习准备的 ROS 2 Humble 项目，围绕 UR5e 六轴机械臂完成从模型、Gazebo 仿真、MoveIt 规划、轨迹跟踪记录，到 planner/controller benchmark 和结构化避障评估的一套闭环 demo。
+基于 ROS 2 Humble、MoveIt 2、Gazebo 和 ros2_control 的 UR5e 六轴机械臂项目。项目面向机器人运动控制实习展示，重点覆盖机械臂建模仿真、关节空间规划、末端位姿规划、笛卡尔多路点规划、轨迹跟踪误差分析、planner/controller benchmark 和结构化避障场景。
 
-项目重点不是只让机械臂“动起来”，而是把运动控制岗位常见的工程问题拆成可运行、可测量、可展示的模块：
+这个项目不是单一的机械臂演示，而是一条可复现的工程链路：机器人模型和控制器启动后，由 MoveIt 2 生成运动轨迹，Gazebo + ros2_control 执行轨迹，再通过 CSV 和图表分析规划时间、路径长度、执行误差、响应时间、超调和避障成功率。
 
-- 如何搭建 URDF/Xacro、ros2_control、Gazebo 和 MoveIt 的完整仿真链路。
-- 如何让 UR5e 完成关节目标、末端位姿目标和笛卡尔路径规划。
-- 如何记录轨迹执行过程，并用 CSV 和图表分析跟踪误差。
-- 如何比较不同 OMPL planner 在多目标、多障碍场景下的成功率、规划时间和路径长度。
-- 如何增强现有 position trajectory controller 的评价指标，包括超调、稳态误差、90% 响应时间和调节时间。
-- 如何构建桌面、立方体障碍物、目标物、窄通道、机械臂中段近距离障碍物等避障场景。
+## Demo Videos
 
-## 我解决了什么问题
+| 场景 | 视频 | 展示重点 |
+| --- | --- | --- |
+| 关节空间目标规划 | [joint_space.webm](docs/media/joint_space.webm) | MoveIt 关节目标规划、Gazebo 执行、RViz wrist_3_link 末端轨迹 |
+| 末端位姿目标规划 | [pose_goal.webm](docs/media/pose_goal.webm) | 末端 pose goal、规划路径和执行效果 |
+| 笛卡尔多路点规划 | [cartesian_waypoints.webm](docs/media/cartesian_waypoints.webm) | P1-P5 路点标记、笛卡尔路径、末端轨迹线 |
+| 结构化避障规划 | [obstacle_avoidance.webm](docs/media/obstacle_avoidance.webm) | 桌面、障碍物、窄通道、中段障碍物和目标点标记 |
 
-这个项目解决的是“机械臂运动规划 demo 很容易停留在演示层，但很难证明规划和控制效果”的问题。
+> RViz 中已将整臂 ghost trail 关闭，只保留 `wrist_3_link` 的 Show Trail，视频中看到的是末端运动轨迹而不是整机重影。
 
-我把 UR5e 的仿真、规划、控制和数据分析连成一条可复现实验链路：先用 Gazebo 和 MoveIt 验证机械臂基础运动，再通过轨迹记录器输出实际执行数据，最后用 benchmark 脚本把不同 planner、不同目标难度和不同控制速度策略量化成 CSV、汇总表和图表。这样项目不仅能展示机械臂避障规划过程，也能回答“哪个规划器更稳”“速度变快后误差如何变化”“窄通道和中段障碍物对成功率有什么影响”等更接近工程实习的问题。
+## Project Highlights
 
-## 系统架构
+- 完成 UR5e 的 URDF/Xacro、MoveIt 2、Gazebo 和 ros2_control 仿真集成。
+- 实现关节空间目标、末端位姿目标、笛卡尔多路点三类典型规划 demo。
+- 针对笛卡尔多路点和避障 demo 增加 RViz MarkerArray 标注，使路点、障碍物和目标更容易观察。
+- 通过轨迹日志记录和绘图脚本分析六轴关节跟踪误差。
+- 对 RRTConnect、RRT、RRTstar、PRM 等 OMPL planner 做规划时间、成功率和路径长度对比。
+- 对 position trajectory controller 在不同速度/加速度缩放策略下的执行效果做 benchmark。
+- 构建桌面、立方体障碍物、目标物、窄通道、机械臂中段障碍物等结构化避障场景。
+
+## System Architecture
 
 ```mermaid
 flowchart LR
-  User[运行 launch / demo / benchmark] --> Bringup[ur5e_bringup<br/>统一启动入口]
+  User[Launch / Demo / Benchmark] --> Bringup[ur5e_bringup]
 
-  Bringup --> Description[ur_description<br/>URDF / Xacro / Mesh / RViz]
+  Bringup --> Description[ur_description<br/>URDF / Xacro / Mesh]
   Bringup --> Gazebo[ur_simulation_gazebo<br/>Gazebo + ros2_control]
-  Bringup --> MoveIt[ur_moveit_config<br/>SRDF / OMPL / kinematics]
+  Bringup --> MoveIt[ur_moveit_config<br/>SRDF / OMPL / Kinematics / RViz]
 
-  MoveIt --> Demo[ur5e_motion_demo<br/>Pose / Joint / Cartesian demo]
+  MoveIt --> Demo[ur5e_motion_demo<br/>Joint / Pose / Cartesian demos]
   MoveIt --> PlannerBench[ur5e_benchmark<br/>Planner benchmark]
-  Gazebo --> ControlBench[ur5e_benchmark<br/>Position trajectory controller metrics]
-  MoveIt --> Avoidance[ur5e_dynamic_avoidance<br/>桌面 / 立方体 / 窄通道 / 中段障碍物]
+  Gazebo --> ControlBench[ur5e_benchmark<br/>Controller metrics]
+  MoveIt --> Avoidance[ur5e_dynamic_avoidance<br/>Structured obstacle scenes]
 
-  Demo --> Logs[CSV 轨迹日志]
-  PlannerBench --> Results[CSV 汇总 + PNG 图表]
+  Demo --> Logs[CSV logs]
+  PlannerBench --> Results[CSV + PNG results]
   ControlBench --> Results
   Avoidance --> Results
 ```
 
-## 功能包说明
+## Packages
 
-- `ur_description`：UR5e 机器人模型、mesh、URDF/Xacro 和 RViz 模型查看配置。
-- `ur_moveit_config`：UR5e MoveIt 配置，包括 manipulator 规划组、运动学和 OMPL planner 配置。
-- `ur_simulation_gazebo`：Gazebo 仿真启动、ros2_control 控制器配置和仿真环境。
-- `ur5e_motion_demo`：位姿目标、关节目标、笛卡尔路径 demo，轨迹记录和误差绘图脚本。
-- `ur5e_benchmark`：planner benchmark、position trajectory controller 指标增强、CSV 汇总和可视化脚本。
-- `ur5e_dynamic_avoidance`：结构化避障场景、目标难度分组、避障 planner benchmark 和展示图表。
-- `ur5e_bringup`：统一 launch 入口，便于启动模型查看、仿真、MoveIt、demo 和 benchmark。
+| Package | 作用 |
+| --- | --- |
+| `ur_description` | UR5e 模型、mesh、URDF/Xacro 和模型查看配置 |
+| `ur_moveit_config` | MoveIt 2 配置、OMPL planner、运动学参数、RViz 展示配置 |
+| `ur_simulation_gazebo` | Gazebo 仿真环境和 ros2_control 控制器配置 |
+| `ur5e_motion_demo` | 关节目标、位姿目标、笛卡尔多路点 demo，以及轨迹记录和绘图 |
+| `ur5e_benchmark` | planner benchmark、controller benchmark、CSV 汇总和图表生成 |
+| `ur5e_dynamic_avoidance` | 结构化避障 demo、避障 benchmark 和可视化图表 |
+| `ur5e_bringup` | 常用启动入口，统一管理 demo 和 benchmark launch |
 
-## 环境依赖
+## Environment
 
-项目基于 ROS 2 Humble 开发。检查依赖：
+项目基于 ROS 2 Humble。全新环境可先检查依赖：
 
 ```bash
+cd ~/ur5e_ws
+source /opt/ros/humble/setup.bash
 rosdep check --from-paths src --ignore-src
 ```
 
-如果是全新环境，缺少系统包时可安装：
+如缺少常见依赖，可安装：
 
 ```bash
 sudo apt install liburdfdom-tools ros-humble-warehouse-ros-sqlite
 ```
 
-## 编译
+## Build
 
 ```bash
+cd ~/ur5e_ws
 source /opt/ros/humble/setup.bash
 colcon build
 source install/setup.bash
 ```
 
-## Demo 运行
+## Demo Commands
 
 查看 UR5e 模型：
 
@@ -90,7 +103,7 @@ ros2 launch ur5e_bringup simulation.launch.py
 ros2 launch ur5e_bringup planning_sim.launch.py
 ```
 
-运行末端位姿目标规划 demo：
+运行末端位姿目标 demo：
 
 ```bash
 ros2 launch ur5e_bringup demo_pose_goal.launch.py
@@ -102,64 +115,38 @@ ros2 launch ur5e_bringup demo_pose_goal.launch.py
 ros2 launch ur5e_bringup demo_joint_goal.launch.py
 ```
 
-运行笛卡尔路径点 demo：
+运行笛卡尔多路点 demo：
 
 ```bash
 ros2 launch ur5e_bringup demo_cartesian_waypoints.launch.py
 ```
 
-运行笛卡尔路径点规划，并记录轨迹跟踪 CSV：
+运行结构化避障 demo：
 
 ```bash
-ros2 launch ur5e_bringup demo_cartesian_tracking.launch.py output_file:=/tmp/ur5e_trajectory_log.csv
+ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py
 ```
 
-生成轨迹跟踪误差图：
-
-```bash
-ros2 run ur5e_motion_demo plot_trajectory_log.py /tmp/ur5e_trajectory_log.csv --output /tmp/ur5e_tracking_error.png
-```
-
-运行桌面、立方体障碍物、目标物、窄通道和机械臂中段障碍物避障 demo：
+无 Gazebo GUI 运行，适合录制或 smoke test：
 
 ```bash
 ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py gazebo_gui:=false
 ```
 
-无 Gazebo GUI 运行规划仿真：
+## Benchmark Commands
+
+比较多个 OMPL planner 在不同关节目标上的表现：
 
 ```bash
-ros2 launch ur5e_bringup planning_sim.launch.py gazebo_gui:=false
+ros2 launch ur5e_bringup benchmark_planners.launch.py \
+  trials:=5 output_file:=/tmp/ur5e_planner_benchmark.csv
 ```
 
-## Benchmark 运行
-
-比较 RRTConnect、RRT、RRT* 和 PRM 在多个关节空间目标上的表现：
+比较不同速度/加速度缩放策略下的控制执行效果：
 
 ```bash
-ros2 launch ur5e_bringup benchmark_planners.launch.py trials:=5 output_file:=/tmp/ur5e_planner_benchmark.csv
-```
-
-比较现有 position `joint_trajectory_controller` 在不同速度/加速度缩放策略下的执行表现：
-
-```bash
-ros2 launch ur5e_bringup benchmark_control_strategies.launch.py trials:=3 output_file:=/tmp/ur5e_control_strategy_benchmark.csv
-```
-
-控制器 benchmark 当前输出：
-
-- 规划时长和实测执行时长。
-- RMS 跟踪误差、最大绝对误差、最终误差。
-- 稳态最大误差和稳态平均误差。
-- 最大超调和超调百分比。
-- 90% 响应时间。
-- 调节时间。
-
-响应指标默认参数：
-
-```bash
-response_ratio:=0.90
-settling_tolerance:=0.01
+ros2 launch ur5e_bringup benchmark_control_strategies.launch.py \
+  trials:=3 output_file:=/tmp/ur5e_control_strategy_benchmark.csv
 ```
 
 运行结构化避障 planner benchmark：
@@ -170,28 +157,12 @@ ros2 launch ur5e_dynamic_avoidance obstacle_planner_benchmark.launch.py \
   output_file:=/tmp/ur5e_obstacle_planner_benchmark.csv
 ```
 
-按场景和目标难度筛选：
-
-```bash
-ros2 launch ur5e_dynamic_avoidance obstacle_planner_benchmark.launch.py \
-  scenarios:=narrow_passage,combined_hard target_difficulties:=hard
-```
-
 汇总 planner 和 controller benchmark：
 
 ```bash
 ros2 run ur5e_benchmark summarize_benchmarks.py \
   --planner-csv /tmp/ur5e_planner_benchmark.csv \
   --control-csv /tmp/ur5e_control_strategy_benchmark.csv
-```
-
-生成 controller benchmark 图表：
-
-```bash
-ros2 run ur5e_benchmark plot_control_benchmark.py \
-  --summary-csv src/ur5e_benchmark/results/control_strategy_comparison/control_strategy_summary.csv \
-  --raw-csv src/ur5e_benchmark/results/control_strategy_comparison/control_strategy_benchmark.csv \
-  --output-dir src/ur5e_benchmark/results/control_strategy_comparison
 ```
 
 汇总结构化避障 benchmark：
@@ -204,28 +175,18 @@ ros2 run ur5e_dynamic_avoidance summarize_dynamic_benchmark.py \
   --difficulty-summary /tmp/ur5e_obstacle_difficulty_summary.csv
 ```
 
-生成结构化避障 benchmark 展示图：
+## Result Figures
 
-```bash
-ros2 run ur5e_dynamic_avoidance plot_obstacle_benchmark.py \
-  --planner-summary src/ur5e_dynamic_avoidance/results/obstacle_benchmark/obstacle_planner_summary.csv \
-  --target-summary src/ur5e_dynamic_avoidance/results/obstacle_benchmark/obstacle_target_summary.csv \
-  --difficulty-summary src/ur5e_dynamic_avoidance/results/obstacle_benchmark/obstacle_difficulty_summary.csv \
-  --output-dir src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots
-```
-
-## 结果展示
-
-### 笛卡尔轨迹跟踪
+### Trajectory Tracking
 
 | 内容 | 文件 |
 | --- | --- |
 | 轨迹日志 | `src/ur5e_motion_demo/results/cartesian_tracking/trajectory_log.csv` |
-| 轨迹误差图 | `src/ur5e_motion_demo/results/cartesian_tracking/tracking_error.png` |
+| 轨迹跟踪汇总 | `src/ur5e_motion_demo/results/cartesian_tracking/trajectory_tracking_summary.csv` |
+| 六轴跟踪误差曲线 | `src/ur5e_motion_demo/results/cartesian_tracking/tracking_error_focused.png` |
 | 各关节 RMS 误差 | `src/ur5e_motion_demo/results/cartesian_tracking/tracking_rms_by_joint.png` |
-| 结果说明 | `src/ur5e_motion_demo/results/cartesian_tracking/README.md` |
 
-![轨迹跟踪误差](src/ur5e_motion_demo/results/cartesian_tracking/tracking_error.png)
+![六轴轨迹跟踪误差](src/ur5e_motion_demo/results/cartesian_tracking/tracking_error_focused.png)
 
 ### Planner Benchmark
 
@@ -241,39 +202,28 @@ ros2 run ur5e_dynamic_avoidance plot_obstacle_benchmark.py \
 
 ![Planner 路径长度](src/ur5e_benchmark/results/planner_comparison/planner_path_length.png)
 
-### Position Trajectory Controller Benchmark
+### Controller Benchmark
+
+这里的速度/加速度缩放是 MoveIt 规划和时间参数化层面的缩放，不是自写底层速度控制器。项目当前使用 ros2_control 的 position trajectory controller 执行轨迹，并评估不同缩放策略对执行误差和响应速度的影响。
 
 | 图表 | 文件 |
 | --- | --- |
 | 规划/实测时长对比 | `src/ur5e_benchmark/results/control_strategy_comparison/control_duration.png` |
 | 跟踪误差指标 | `src/ur5e_benchmark/results/control_strategy_comparison/control_tracking_error.png` |
+| RMS 误差 | `src/ur5e_benchmark/results/control_strategy_comparison/control_rms_error.png` |
 | 响应时间与调节时间 | `src/ur5e_benchmark/results/control_strategy_comparison/control_response_time.png` |
 | 超调指标 | `src/ur5e_benchmark/results/control_strategy_comparison/control_overshoot.png` |
-| 速度-误差权衡散点图 | `src/ur5e_benchmark/results/control_strategy_comparison/control_speed_error_tradeoff.png` |
-| 原始 CSV | `src/ur5e_benchmark/results/control_strategy_comparison/control_strategy_benchmark.csv` |
-| 汇总 CSV | `src/ur5e_benchmark/results/control_strategy_comparison/control_strategy_summary.csv` |
+| 速度-误差权衡 | `src/ur5e_benchmark/results/control_strategy_comparison/control_speed_error_tradeoff.png` |
 
 ![Controller 响应时间](src/ur5e_benchmark/results/control_strategy_comparison/control_response_time.png)
 
 ![Controller 跟踪误差](src/ur5e_benchmark/results/control_strategy_comparison/control_tracking_error.png)
 
-当前结果显示：`slow` 策略误差最低但响应最慢，`fast` 策略响应最快但 RMS/最大误差更高，三组策略稳态误差都很小，说明现有 position trajectory controller 在仿真环境下有较稳定的终点收敛能力。
+当前结果显示：`slow` 策略误差最低但执行时间更长，`fast` 策略响应更快但 RMS/最大误差更高，说明速度规划参数会直接影响轨迹执行误差和响应表现。
 
-### 结构化避障 Benchmark
+### Structured Obstacle Benchmark
 
-场景包含：
-
-- `baseline`：无额外障碍基线场景。
-- `table_cube_goal`：桌面、立方体障碍物和目标物。
-- `narrow_passage`：窄通道。
-- `mid_arm_obstacle`：障碍物靠近机械臂中段。
-- `combined_hard`：组合高难度场景。
-
-目标难度分组：
-
-- `easy`
-- `medium`
-- `hard`
+场景包含 `baseline`、`table_cube_goal`、`narrow_passage`、`mid_arm_obstacle` 和 `combined_hard`。目标难度分为 `easy`、`medium` 和 `hard`。
 
 | 图表 | 文件 |
 | --- | --- |
@@ -283,78 +233,28 @@ ros2 run ur5e_dynamic_avoidance plot_obstacle_benchmark.py \
 | 不同难度成功率 | `src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots/success_rate_by_difficulty.png` |
 | 目标成功率热力图 | `src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots/target_success_heatmap.png` |
 | planner 效率散点图 | `src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots/planner_efficiency_scatter.png` |
-| 原始 CSV | `src/ur5e_dynamic_avoidance/results/obstacle_benchmark/obstacle_planner_benchmark.csv` |
 
 ![避障场景成功率](src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots/success_rate_by_scene.png)
 
-![避障规划时间](src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots/planning_time_by_scene.png)
-
 ![目标成功率热力图](src/ur5e_dynamic_avoidance/results/obstacle_benchmark/plots/target_success_heatmap.png)
 
-## Demo 素材位
+## What To Say In Interviews
 
-建议将答辩或简历展示素材放在 `docs/media/` 目录，README 中使用固定路径引用，后续替换文件即可。
+可以这样概括项目：
 
-| 素材 | 建议文件 | 当前状态 |
-| --- | --- | --- |
-| Demo GIF | `docs/media/ur5e_obstacle_demo.gif` | 待录制 |
-| Gazebo 截图 | `docs/media/gazebo_obstacle_scene.png` | 待录制 |
-| RViz 截图 | `docs/media/rviz_motion_plan.png` | 待录制 |
-| 30-60 秒视频 | 在此处填写 Bilibili / YouTube / 网盘链接 | 待上传 |
+> 我搭建了一个基于 ROS 2 Humble、MoveIt 2、Gazebo 和 ros2_control 的 UR5e 机械臂运动规划与仿真项目。项目支持关节空间、末端位姿和笛卡尔多路点规划，并且把执行轨迹记录成 CSV，用图表分析六轴跟踪误差。同时我做了 planner benchmark 和控制速度缩放策略对比，还构建了桌面、障碍物、窄通道和中段障碍物等结构化避障场景，用成功率、规划时间和路径长度评价不同规划器表现。
 
-录制建议脚本：
+项目边界也建议说清楚：
 
-```bash
-source /opt/ros/humble/setup.bash
-source install/setup.bash
-ros2 launch ur5e_bringup planning_sim.launch.py
-```
+- 当前避障是基于 MoveIt PlanningScene 的结构化障碍物规划，不是实时在线动态避障。
+- 当前控制侧使用 position trajectory controller，重点在轨迹执行评估，没有自研阻抗/导纳/力矩控制器。
+- 速度/加速度缩放作用在规划和轨迹时间参数化层面，不等同于底层闭环速度控制。
 
-另开终端运行：
+## Verification
 
-```bash
-source /opt/ros/humble/setup.bash
-source install/setup.bash
-ros2 launch ur5e_dynamic_avoidance obstacle_avoidance_demo.launch.py
-```
+最近一次验证内容：
 
-视频建议控制在 30-60 秒，内容顺序可以是：Gazebo/RViz 环境总览、桌面和障碍物场景、一次避障规划、轨迹执行、最后切到 benchmark 图表。
-
-## 当前完整度
-
-已完成：
-
-- UR5e 模型查看。
-- Gazebo + ros2_control 仿真。
-- MoveIt 规划配置。
-- 关节目标、末端位姿目标和笛卡尔路径 demo。
-- 笛卡尔轨迹记录、CSV 输出和误差可视化。
-- OMPL planner benchmark。
-- position trajectory controller 指标增强和图表输出。
-- 桌面、立方体、目标物、窄通道、中段障碍物等结构化避障场景。
-- 按场景、目标和难度分组的避障 benchmark。
-- CSV 汇总和 PNG 图表展示。
-
-仍可继续增强：
-
-- 录制 Gazebo/RViz 截图、GIF 和 30-60 秒讲解视频。
-- 增加最小障碍物距离、末端 clearance、碰撞边界余量等避障质量指标。
-- 增加目标物 attach/detach，扩展为 pick-and-place 任务。
-- 增加真实 UR 驱动迁移说明和硬件安全限制。
-- 对 velocity controller、effort controller、PID 参数和 update rate 做第二阶段控制对比。
-
-## 测试验证
-
-```bash
-source /opt/ros/humble/setup.bash
-colcon build
-colcon test
-colcon test-result --all --verbose
-```
-
-当前工作区最近一次验证：
-
-- 编译：`colcon build --packages-select ur5e_benchmark ur5e_bringup` 通过。
-- 单元/launch 测试：`77 tests, 0 errors, 0 failures, 9 skipped`。
-- 结构化避障 benchmark smoke run：生成 120 条记录。
-- position trajectory controller benchmark：输出 CSV、汇总 CSV 和 6 张展示图。
+- `colcon build --packages-select ur5e_motion_demo ur5e_dynamic_avoidance ur_moveit_config` 通过。
+- `demo_cartesian_waypoints.launch.py` smoke test 通过，笛卡尔路径 fraction 为 `100.00%`。
+- `obstacle_avoidance_demo.launch.py` smoke test 通过，三段避障动作均规划并执行成功。
+- RViz 配置已加入 `/cartesian_waypoint_markers` 和 `/obstacle_demo_markers` 两组 MarkerArray 显示。
