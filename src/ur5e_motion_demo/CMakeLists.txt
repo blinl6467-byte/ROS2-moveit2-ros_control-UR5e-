@@ -13,6 +13,7 @@ find_package(moveit_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 add_executable(pose_goal_demo src/pose_goal_demo.cpp)
 target_compile_features(pose_goal_demo PUBLIC c_std_99 cxx_std_17)  # 要求 C99 和 C++17
@@ -39,6 +40,7 @@ ament_target_dependencies(
   "moveit_msgs"
   "moveit_ros_planning_interface"
   "rclcpp"
+  "visualization_msgs"
 )
 
 add_executable(trajectory_recorder src/trajectory_recorder.cpp)

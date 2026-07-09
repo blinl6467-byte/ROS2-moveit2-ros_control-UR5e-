@@ -11,6 +11,7 @@ find_package(moveit_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(shape_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 set(DEPENDENCIES
   geometry_msgs
@@ -18,6 +19,7 @@ set(DEPENDENCIES
   moveit_ros_planning_interface
   rclcpp
   shape_msgs
+  visualization_msgs
 )
 
 add_executable(moving_obstacle_scene src/moving_obstacle_scene.cpp)

@@ -226,6 +226,33 @@ Visualization Manager:
         Show Robot Visual: true
       Value: true
       Velocity_Scaling_Factor: 0.1
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Cartesian Waypoint Markers
+      Namespaces:
+        cartesian_waypoint_labels: true
+        cartesian_waypoint_path: true
+        cartesian_waypoints: true
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /cartesian_waypoint_markers
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Obstacle Demo Markers
+      Namespaces:
+        obstacle_demo_goal_markers: true
+        obstacle_scene_labels: true
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /obstacle_demo_markers
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
