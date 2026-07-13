@@ -11,26 +11,16 @@
 | `03_package_description.png` | 模块说明 | 说明各功能包职责 |
 | `04_ros2_control_config.png` | 控制链路 | 展示 ros2_control / controller 配置 |
 | `05_trajectory_recorder_code.png` | 数据记录 | 展示轨迹记录和误差分析的代码依据 |
-| `06_joint_space_demo.png` | 基础规划 | 关节空间目标规划执行截图 |
-| `07_pose_goal_demo.png` | 末端规划 | 末端位姿目标规划执行截图 |
-| `08_cartesian_waypoints_demo.png` | 多路点规划 | 笛卡尔多路点、末端轨迹和执行成功日志 |
-| `08b_cartesian_waypoints_rviz_clean.png` | 多路点规划 | 裁剪后的 RViz 干净版，适合直接放 PPT |
-| `09_obstacle_avoidance_demo.png` | 避障规划 | 障碍物、目标点、路径标记和执行成功日志 |
-| `09b_obstacle_avoidance_rviz_clean.png` | 避障规划 | 裁剪后的 RViz 干净版，适合直接放 PPT |
-| `10_tracking_error_focused.png` | 轨迹跟踪 | 六轴关节规划/实际误差曲线 |
-| `11_tracking_rms_by_joint.png` | 轨迹跟踪 | 各关节 RMS 误差柱状图 |
-| `12_planner_planning_time.png` | Planner 对比 | 不同 OMPL planner 平均规划时间 |
-| `13_planner_path_length.png` | Planner 对比 | 不同 OMPL planner 路径长度 |
-| `14_control_response_time.png` | 控制策略对比 | 不同速度/加速度缩放策略响应时间 |
-| `15_control_tracking_error.png` | 控制策略对比 | 不同缩放策略跟踪误差 |
-| `16_control_speed_error_tradeoff.png` | 控制策略对比 | 速度和误差权衡关系 |
-| `17_obstacle_success_rate_by_scene.png` | 避障结果 | 不同障碍场景规划成功率 |
-| `18_obstacle_target_success_heatmap.png` | 避障结果 | planner/目标组合成功率热力图 |
-| `19_obstacle_planning_time_by_scene.png` | 避障结果 | 不同场景规划耗时 |
-| `20_live_cartesian_desktop.png` | 多路点规划 | 现场运行截图，包含 RViz 主界面 |
-| `20c_live_cartesian_scene_only.png` | 多路点规划 | 现场运行截图裁剪版，只保留 RViz 主视图区 |
-| `21_live_obstacle_desktop.png` | 避障规划 | 现场运行截图，包含 RViz 主界面和避障标记 |
-| `21c_live_obstacle_scene_only.png` | 避障规划 | 现场运行截图裁剪版，只保留 RViz 主视图区 |
+| `06_tracking_error_focused.png` | 轨迹跟踪 | 六轴关节规划/实际误差曲线 |
+| `07_tracking_rms_by_joint.png` | 轨迹跟踪 | 各关节 RMS 误差柱状图 |
+| `08_planner_planning_time.png` | Planner 对比 | 不同 OMPL planner 平均规划时间 |
+| `09_planner_path_length.png` | Planner 对比 | 不同 OMPL planner 路径长度 |
+| `10_control_response_time.png` | 控制策略对比 | 不同速度/加速度缩放策略响应时间 |
+| `11_control_tracking_error.png` | 控制策略对比 | 不同缩放策略跟踪误差 |
+| `12_control_speed_error_tradeoff.png` | 控制策略对比 | 速度和误差权衡关系 |
+| `13_obstacle_success_rate_by_scene.png` | 避障结果 | 不同障碍场景规划成功率 |
+| `14_obstacle_target_success_heatmap.png` | 避障结果 | planner/目标组合成功率热力图 |
+| `15_obstacle_planning_time_by_scene.png` | 避障结果 | 不同场景规划耗时 |
 
 ## PPT 中最建议放的 8 张
 
@@ -38,12 +28,12 @@
 
 1. `01_readme_overview.png`
 2. `02_package_tree.png`
-3. `20_live_cartesian_desktop.png`
-4. `21_live_obstacle_desktop.png`
-5. `10_tracking_error_focused.png`
-6. `12_planner_planning_time.png`
-7. `14_control_response_time.png`
-8. `17_obstacle_success_rate_by_scene.png`
+3. `04_ros2_control_config.png`
+4. `06_tracking_error_focused.png`
+5. `08_planner_planning_time.png`
+6. `10_control_response_time.png`
+7. `13_obstacle_success_rate_by_scene.png`
+8. `14_obstacle_target_success_heatmap.png`
 
 ## 还可以补充的截图
 
