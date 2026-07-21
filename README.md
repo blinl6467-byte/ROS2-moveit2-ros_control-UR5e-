@@ -10,6 +10,7 @@
 - 比较不同 OMPL planner 在多目标、多障碍场景下的成功率、规划时间和路径长度。
 - 增强现有 position trajectory controller 的评价指标，包括超调、稳态误差、90% 响应时间和调节时间。
 - 建桌面、立方体障碍物、目标物、近距离障碍物等避障场景。
+- 自主实现与当前 URDF 坐标链一致的 UR5e 正运动学、几何雅可比和阻尼最小二乘逆运动学，并通过有限差分及 KDL 随机位形对照验证。
 
 ## 我解决了什么问题
 
@@ -31,6 +32,7 @@ flowchart LR
   MoveIt --> PlannerBench[ur5e_benchmark<br/>Planner benchmark]
   Gazebo --> ControlBench[ur5e_benchmark<br/>Position trajectory controller metrics]
   MoveIt --> Avoidance[ur5e_dynamic_avoidance<br/>桌面 / 立方体 / 窄通道 / 中段障碍物]
+  Description --> Kinematics[ur5e_kinematics<br/>自研 FK / Jacobian / DLS IK]
 
   Demo --> Logs[CSV 轨迹日志]
   PlannerBench --> Results[CSV 汇总 + PNG 图表]
@@ -47,6 +49,8 @@ flowchart LR
 - `ur5e_benchmark`：planner benchmark、position trajectory controller 指标增强、CSV 汇总和可视化脚本。
 - `ur5e_dynamic_avoidance`：结构化避障场景、目标难度分组、避障 planner benchmark 和展示图表。
 - `ur5e_bringup`：统一 launch 入口，便于启动模型查看、仿真、MoveIt、demo 和 benchmark。
+- `ur5e_kinematics`：不依赖 MoveIt 求解的 C++ 运动学核心库，实现 FK、6×6 几何雅可比、SO(3) 位姿误差和带奇异阻尼/关节限位的数值 IK，并以有限差分与 KDL 作为独立测试基准。
+  详细推导和面试讲解见 [`docs/kinematics_interview_guide.md`](docs/kinematics_interview_guide.md)。
 
 ## 环境依赖
 
@@ -133,6 +137,14 @@ ros2 launch ur5e_bringup planning_sim.launch.py gazebo_gui:=false
 ```
 
 ## Benchmark 运行
+
+运行自研运动学随机可达位姿 benchmark：
+
+```bash
+ros2 run ur5e_kinematics kinematics_benchmark 1000
+```
+
+该测试从随机关节状态生成可达目标位姿，对初值加入扰动后求解 IK，输出成功率、成功样本位姿残差、平均迭代次数和单次求解耗时。数值 IK 是局部求解器，结果不代表全局完备性。
 
 比较 RRTConnect、RRT、RRT* 和 PRM 在多个关节空间目标上的表现：
 
